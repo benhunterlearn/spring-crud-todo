@@ -30,8 +30,9 @@ public class TodoControllerTest {
     @Autowired
     private MockMvc mvc;
 
-//    private final ObjectMapper mapper = new ObjectMapper();
     // ObjectMapper needs to find the module that supports Java 8 Date types.
+    // See build.gradle:
+    //      implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     private final ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
             .build();
@@ -103,7 +104,7 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void patchUpdatesExistingTodoWithValidData() throws Exception {
+    public void patchUpdatesExistingTodoWithNewDescriptionPriorityAndDueDate() throws Exception {
         Todo firstTodo = this.repository.save(new Todo().setDescription("first")
                 .setPriority("green")
                 .setDueDate(LocalDate.now()));

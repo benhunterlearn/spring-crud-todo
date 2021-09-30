@@ -3,6 +3,7 @@ package com.benhunterlearn.springcrudtodo.controller;
 import com.benhunterlearn.springcrudtodo.model.Todo;
 import com.benhunterlearn.springcrudtodo.model.TodoDto;
 import com.benhunterlearn.springcrudtodo.repository.TodoRepository;
+import com.benhunterlearn.springcrudtodo.service.TodoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -10,45 +11,34 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/todo")
 public class TodoController {
-    TodoRepository repository;
+    TodoService service;
 
-    public TodoController(TodoRepository repository) {
-        this.repository = repository;
+    public TodoController(TodoService service) {
+        this.service = service;
     }
 
     @PostMapping("")
     public TodoDto postCreateTodo(@RequestBody TodoDto todoDto) {
-        TodoDto outputTodoDto = new TodoDto(this.repository.save(new Todo(todoDto)));
-        return outputTodoDto;
-
-
+        return this.service.createTodo(todoDto);
     }
 
     @GetMapping("")
     public Iterable<TodoDto> getTodoList() {
-        ArrayList<TodoDto> todoDtoIterable = new ArrayList<TodoDto>();
-        for (Todo todo : this.repository.findAll()) {
-            todoDtoIterable.add(new TodoDto(todo));
-        }
-        return todoDtoIterable;
+        return this.service.getTodoList();
     }
 
     @GetMapping("{id}")
     public TodoDto getTodoById(@PathVariable Long id) {
-        return new TodoDto(this.repository.findById(id).get());
+        return this.service.getTodoById(id);
     }
 
     @PatchMapping("{id}")
     public TodoDto patchUpdatesTodoById(@PathVariable Long id, @RequestBody TodoDto todoDto) {
-        Todo currentTodo = this.repository.findById(id).get();
-        currentTodo.patch(todoDto);
-        currentTodo = this.repository.save(currentTodo);
-        return new TodoDto(currentTodo);
+        return this.service.patchById(id, todoDto);
     }
 
     @DeleteMapping("{id}")
     public String deleteTodoById(@PathVariable Long id) {
-        this.repository.deleteById(id);
-        return "SUCCESS";
+        return this.service.deleteById(id);
     }
 }
